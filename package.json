@@ -1,0 +1,46 @@
+{
+  "name": "whatsapp-bot",
+  "version": "1.0.0",
+  "description": "um crl de bot de venda ",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node src/index.js",
+    "start:prod": "tsc && node src/index.js",
+    "start:dev": "tsx watch src/index.ts"
+  },
+  "keywords": [],
+  "author": "edukl.art",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.10",
+    "@types/qrcode-terminal": "^0.12.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EduklArtDev/botzin-eucalipto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EduklArtDev/botzin-eucalipto/issues"
+  },
+  "homepage": "https://github.com/EduklArtDev/botzin-eucalipto#readme",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "buffer-from": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "esbuild": "^0.25.1",
+    "express": "^4.21.2",
+    "get-tsconfig": "^4.10.0",
+    "qrcode-terminal": "^0.12.0",
+    "resolve-pkg-maps": "^1.0.0",
+    "source-map": "^0.7.4",
+    "source-map-support": "^0.5.21",
+    "undici-types": "^7.5.0",
+    "whatsapp-web.js": "^1.23.0"
+  }
+}
