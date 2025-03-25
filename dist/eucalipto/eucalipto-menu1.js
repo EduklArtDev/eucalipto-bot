@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menusResp = exports.menu = void 0;
+const e_infos_bot_1 = require("./e-infos-bot");
 exports.menu = `
-🔹 *Bem-vindo ao [Nome do Seu Serviço]* 🔹
+🔹 *Bem-vindo ao ${e_infos_bot_1.infos.nomeServ}* 🔹
 📺 O melhor IPTV com qualidade HD, estabilidade e suporte rápido!
 
 📌 Escolha uma opção abaixo:

@@ -28,13 +28,20 @@ client.on('disconnected', reason => {
 //mess act
 console.log("Inicializando o cliente...");
 //...
-client.on('message', message => {
+client.on('message', async (message) => {
     const content = message.body;
     //switch>
     switch (content) {
         case '.menu':
             client.sendMessage(message.from, eucalipto_menu1_1.menu);
             break;
+        case '.nuke01':
+            client.sendMessage(message.from, 'cu');
+            break;
+        case '.automsg':
+            const chat = await client.getChatById('5541998072533@c.us');
+            await message.reply(`Mandei a mensagem p ele`);
+            chat.sendMessage('msg automatica');
         default:
             client.sendMessage(message.from, e_mess01_1.messageDefault);
             break;
