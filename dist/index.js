@@ -30,18 +30,25 @@ console.log("Inicializando o cliente...");
 //...
 client.on('message', async (message) => {
     const content = message.body;
+    const chat = await client.getChatById('5541998072533@c.us');
+    console.log(`Message recebida de: ${chat.name}: ${message.body}`);
     //switch>
     switch (content) {
         case '.menu':
-            client.sendMessage(message.from, eucalipto_menu1_1.menu);
-            break;
-        case '.nuke01':
-            client.sendMessage(message.from, 'cu');
+            await message.reply(eucalipto_menu1_1.menu);
             break;
         case '.automsg':
-            const chat = await client.getChatById('5541998072533@c.us');
             await message.reply(`Mandei a mensagem p ele`);
             chat.sendMessage('msg automatica');
+            break;
+        case '.gp':
+            break;
+        case '.idgp':
+            break;
+        case '.opengp':
+            break;
+        case '.ciclo':
+            break;
         default:
             client.sendMessage(message.from, e_mess01_1.messageDefault);
             break;
