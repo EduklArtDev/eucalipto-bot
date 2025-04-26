@@ -34,3 +34,6 @@ logs/
 Thumbs.db
 .idea/
 *.swp
+
+# privado
+/files/*

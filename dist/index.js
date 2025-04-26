@@ -8,6 +8,9 @@ const qrcode_terminal_1 = __importDefault(require("qrcode-terminal"));
 const whatsapp_web_js_1 = require("whatsapp-web.js");
 const eucalipto_menu1_1 = require("./eucalipto/eucalipto-menu1");
 const e_mess01_1 = require("./eucalipto/e-mess01");
+const e_infos_bot_1 = require("./eucalipto/e-infos-bot");
+const readFile = require('read-excel-file/node');
+//npm install read-excel-file
 //...
 let sentGreeting = false;
 const client = new whatsapp_web_js_1.Client({
@@ -15,6 +18,7 @@ const client = new whatsapp_web_js_1.Client({
 });
 client.on('qr', qr => {
     console.log('Rec qrCode!!!');
+    console.log(e_infos_bot_1.arts.abeia);
     qrcode_terminal_1.default.generate(qr, { small: true }); //QR Code terminal
 });
 client.on('ready', () => {
@@ -61,6 +65,54 @@ client.on('message', async (message) => {
         }
         //switch>
         switch (content) {
+            case '.link':
+                readFile('./files/15.000 Grupos.xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
+            case '.link2':
+                readFile('./files/12-MIL-GRUPOS-DE-DIVULGAÇÃO-GRATIS-DE-WHATAPP-2.xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
+            case '.link3':
+                readFile('./files/16.000 Grupos.xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
+            case '.link4':
+                readFile('./files/500-Grupos-Vendas-e-Divulgação-_1_.xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
+            case '.link5':
+                readFile('./files/PLANILHA DE ENDEREÇOS.xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
+            case '.link6':
+                readFile('./files/vendaem12-hrs (2).xlsx').then(async (linhas) => {
+                    for (const linha of linhas) {
+                        console.log(linha);
+                        await message.reply(linha.join(' | '));
+                    }
+                });
+                break;
             case '.menu':
                 await message.reply(eucalipto_menu1_1.menu);
                 break;
@@ -83,14 +135,6 @@ client.on('message', async (message) => {
             case '.automsg':
                 await message.reply(`Mandei a mensagem p ele`);
                 chat.sendMessage('msg automatica');
-                break;
-            case '.gp':
-                break;
-            case '.idgp':
-                break;
-            case '.opengp':
-                break;
-            case '.ciclo':
                 break;
             default:
                 //client.sendMessage(message.from,messageDefault)

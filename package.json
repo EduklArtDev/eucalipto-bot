@@ -37,6 +37,7 @@
     "express": "^4.21.2",
     "get-tsconfig": "^4.10.0",
     "qrcode-terminal": "^0.12.0",
+    "read-excel-file": "^5.8.7",
     "resolve-pkg-maps": "^1.0.0",
     "source-map": "^0.7.4",
     "source-map-support": "^0.5.21",
