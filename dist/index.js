@@ -23,6 +23,7 @@ client.on('qr', qr => {
 });
 client.on('ready', () => {
     console.log('Cliente ta on heheh!!!');
+    console.log('Bot pronto! Grupos conhecidos:', [...gruposConhecidos]);
 });
 client.on('auth_failure', msg => {
     console.error('Falha na autenticação:', msg);
@@ -33,27 +34,41 @@ client.on('disconnected', reason => {
 //mess act
 console.log("Inicializando o cliente...");
 //...
+client.on('group_join', (notification) => {
+    console.log('Entrou em um grupo:', notification.chatId);
+});
+const gruposConhecidos = new Set();
 client.on('message', async (message) => {
     if (message.from.endsWith("@g.us")) {
-        console.log('msg de gp');
+        console.log(`Mensagem recebida no grupo ${message.from}`);
+        gruposConhecidos.add(message.from);
     }
     else {
         let linkGrupo = message.body.trim();
         if (linkGrupo.includes("chat.whatsapp.com")) {
-            let codConv = linkGrupo.split('/').pop(); // Pega o código do link
+            const codConv = linkGrupo.split('/').pop(); // Extrai o código do convite
             if (!codConv) {
                 message.reply("❌ O link do grupo está inválido!");
                 return;
             }
             try {
-                let infoGp = await client.getInviteInfo(codConv);
-                let gpId = infoGp.id._serialized;
+                // Busca informações do grupo com o código
+                const infoGp = await client.getInviteInfo(codConv);
+                const gpId = infoGp.id._serialized;
                 console.log(`ID do Grupo: ${gpId}`);
-                message.reply(`✅ O ID do grupo é: ${gpId}`);
+                await message.reply(`✅ O ID do grupo é: ${gpId}`);
+                // Entra no grupo usando o código
+                await client.acceptInvite(codConv);
+                await message.reply("✅ Bot entrou no grupo com sucesso!");
+                // Espera 2 segundos antes de enviar a mensagem
+                setTimeout(async () => {
+                    await client.sendMessage(gpId, 'quem quiser iptv barato vem pv');
+                    console.log('Mensagem enviada!');
+                }, 2000);
             }
-            catch (erro) {
-                console.error("Erro ao obter informações do grupo:", erro);
-                message.reply("❌ Não consegui obter as informações do grupo. Verifique o link!");
+            catch (error) {
+                console.error("Erro ao entrar no grupo:");
+                await message.reply("❌ Não foi possível entrar no grupo. Verifique o link ou permissões.");
             }
         }
         const content = message.body;
@@ -65,6 +80,66 @@ client.on('message', async (message) => {
         }
         //switch>
         switch (content) {
+            case '.env':
+                console.log('[.env] Comando recebido');
+                try {
+                    const chats = await client.getChats();
+                    console.log(`Total de chats encontrados: ${chats.length}`);
+                    const grupos = chats.filter(chat => {
+                        console.log(`[debug] chat: ${chat.name} | isGroup: ${chat.isGroup}`);
+                        return chat.isGroup;
+                    });
+                    console.log(`[.env] Total de grupos encontrados: ${grupos.length}`);
+                    setTimeout(async () => {
+                        await client.sendMessage(message.from, 'quem quiser iptv barato vem pv');
+                        console.log('Mensagem enviada!');
+                    }, 2000);
+                    chats.forEach(chat => {
+                        if (chat.isGroup) {
+                            console.log(`Grupo encontrado: ${chat.name} | ID: ${chat.id._serialized}+'@g.us'`);
+                            client.sendMessage(message.from, 'quem quiser iptv barato vem pv');
+                        }
+                        else {
+                            console.log(`Chat individual: ${chat.name} | ID: ${chat.id._serialized}`);
+                        }
+                    });
+                    if (grupos.length === 0) {
+                        await message.reply('⚠️ Nenhum grupo foi encontrado. O bot precisa ter recebido ou enviado mensagem no grupo para ele aparecer.');
+                        break;
+                    }
+                    for (const group of grupos) {
+                        console.log(`✅ Enviando mensagem para: ${group.name} - ID: ${group.id._serialized}`);
+                        await client.sendMessage(group.id._serialized, 'Quem quiser IPTV barato vem pv!');
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
+                    await message.reply('✅ Mensagens enviadas para todos os grupos.');
+                }
+                catch (err) {
+                    console.error('❌ Erro no comando .env:', err);
+                    await message.reply('❌ Erro ao processar o comando .env.');
+                }
+                break;
+            case '.sendMessContact':
+                await message.reply('404');
+                break;
+            case '.sendAllContact':
+                const contacts = await client.getContacts();
+                for (const contact of contacts) {
+                    //  await message.reply(contact.pushname + ' ' + contact.id.user + ' ' + contact.statusMute)
+                    const numberId = contact.id.user;
+                    if (!numberId)
+                        continue; // se não tiver número, pula
+                    try {
+                        const chatClient = await client.getChatById(numberId + '@c.us');
+                        await chatClient.sendMessage(e_mess01_1.messAllTest);
+                        console.log(`Mensagem enviada para: ${contact.pushname || numberId}`);
+                    }
+                    catch (err) {
+                        // Se der erro (tipo número inválido), apenas loga e continua
+                        console.log(`Não consegui enviar para ${contact.pushname || numberId}: ${err}`);
+                    }
+                }
+                break;
             case '.link':
                 readFile('./files/15.000 Grupos.xlsx').then(async (linhas) => {
                     for (const linha of linhas) {
