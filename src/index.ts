@@ -1,33 +1,29 @@
 //imprts 
 import qrcode from 'qrcode-terminal'
-import { Client, LocalAuth } from 'whatsapp-web.js'
+import { Client, LocalAuth, Message, GroupChat } from 'whatsapp-web.js'
 import { menu, menusResp } from './eucalipto/eucalipto-menu1'
 import { messageDefault, messAllTest } from './eucalipto/e-mess01'
 import { arts } from './eucalipto/e-infos-bot'
-const readFile = require('read-excel-file/node')
-//npm install read-excel-file
+//constantes
+const readFile = require('read-excel-file/node')//npm install read-excel-file
+const gruposConhecidos = new Set();
+let sentGreeting = false //função para não repetir mensagem default
 
-//...
-
-
-
-let sentGreeting = false
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: true }
 })
 
 client.on('qr', qr => {
-    console.log('Rec qrCode!!!')
+    console.log('Gerando seu QRcode... Por Favor abra seu whatsapp e escaneie o QRcode.')
     console.log(arts.abeia)
-    qrcode.generate(qr, { small: true })//QR Code terminal
+    qrcode.generate(qr, { small: true })
 })
 
 client.on('ready', () => {
-    console.log('Cliente ta on heheh!!!')
+    console.log('O seu cliente eucalipto está on e pronto para trabalhar.')
     console.log('Bot pronto! Grupos conhecidos:', [...gruposConhecidos]);
-    
-
 })
 
 client.on('auth_failure', msg => {
@@ -37,15 +33,15 @@ client.on('auth_failure', msg => {
 client.on('disconnected', reason => {
     console.log('Bot desconectado:', reason);
 });
-//mess act
+
 console.log("Inicializando o cliente...");
-//...
+
 client.on('group_join', (notification) => {
     console.log('Entrou em um grupo:', notification.chatId);
 });
 
 
-const gruposConhecidos = new Set();
+
 
 client.on('message', async message => {
 
@@ -53,46 +49,55 @@ client.on('message', async message => {
         console.log(`Mensagem recebida no grupo ${message.from}`);
         gruposConhecidos.add(message.from)
     } else {
-
         let linkGrupo: string = message.body.trim();
 
         if (linkGrupo.includes("chat.whatsapp.com")) {
           const codConv = linkGrupo.split('/').pop(); // Extrai o código do convite
-        
+      
           if (!codConv) {
-            message.reply("❌ O link do grupo está inválido!");
+            await message.reply("❌ O link do grupo está inválido!");
             return;
           }
-        
+      
           try {
-            // Busca informações do grupo com o código
             const infoGp = await client.getInviteInfo(codConv) as any;
             const gpId: string = infoGp.id._serialized;
-        
+      
             console.log(`ID do Grupo: ${gpId}`);
             await message.reply(`✅ O ID do grupo é: ${gpId}`);
-
-            // Entra no grupo usando o código
+      
             await client.acceptInvite(codConv);
             await message.reply("✅ Bot entrou no grupo com sucesso!");
-
-            // Espera 2 segundos antes de enviar a mensagem
+      
             setTimeout(async () => {
-                await client.sendMessage(gpId, 'quem quiser iptv barato vem pv');
-                console.log('Mensagem enviada!');
-            }, 2000);
+              try {
+                console.log('⏱ Aguardando 4s...');
 
+                await client.sendMessage(gpId, 'Quem quiser IPTV barato vem PV 📺');
+                console.log('✉️ Mensagem enviada!');
+      
+                const grupoChat = await client.getChatById(gpId) as GroupChat;
+      
+                if (!grupoChat.isGroup) {
+                  console.error('❌ Chat não é um grupo!');
+                  return;
+                }
+      
+                await grupoChat.leave();
+                console.log('🚪 Saiu do grupo!');
+              } catch (err) {
+                console.error('❌ Erro ao enviar mensagem ou sair:', err);
+              }
+            }, 4000);
+      
           } catch (error) {
-            console.error("Erro ao entrar no grupo:", /*error*/);
+            console.error("❌ Erro ao entrar no grupo:", error);
             await message.reply("❌ Não foi possível entrar no grupo. Verifique o link ou permissões.");
           }
         }
-        
-
 
         const content = message.body
-        const chat = await client.getChatById('5541998072533@c.us')
-
+        const chat = await client.getChatById('numero@c.us')
 
         console.log(`Message recebida de: ${chat.name}: ${message.body}`)
 
@@ -104,62 +109,7 @@ client.on('message', async message => {
         }
 
 
-        //switch>
         switch (content) {
-
-            case '.env':
-    console.log('[.env] Comando recebido');
-
-    try {
-        const chats = await client.getChats();
-        console.log(`Total de chats encontrados: ${chats.length}`);
-
-        const grupos = chats.filter(chat => {
-            console.log(`[debug] chat: ${chat.name} | isGroup: ${chat.isGroup}`);
-            return chat.isGroup;
-        });
-
-        console.log(`[.env] Total de grupos encontrados: ${grupos.length}`);
-
-        setTimeout(async () => {
-            await client.sendMessage(message.from, 'quem quiser iptv barato vem pv');
-            console.log('Mensagem enviada!');
-        }, 2000);
-
-        chats.forEach(chat => {
-            if (chat.isGroup) {
-                console.log(`Grupo encontrado: ${chat.name} | ID: ${chat.id._serialized}+'@g.us'`);
-                client.sendMessage(message.from, 'quem quiser iptv barato vem pv');
-            } else {
-                console.log(`Chat individual: ${chat.name} | ID: ${chat.id._serialized}`);
-            }
-        });
-
-        if (grupos.length === 0) {
-            await message.reply('⚠️ Nenhum grupo foi encontrado. O bot precisa ter recebido ou enviado mensagem no grupo para ele aparecer.');
-            break;
-        }
-
-        for (const group of grupos) {
-            console.log(`✅ Enviando mensagem para: ${group.name} - ID: ${group.id._serialized}`);
-            await client.sendMessage(group.id._serialized, 'Quem quiser IPTV barato vem pv!');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-
-        await message.reply('✅ Mensagens enviadas para todos os grupos.');
-    } catch (err) {
-        console.error('❌ Erro no comando .env:', err);
-        await message.reply('❌ Erro ao processar o comando .env.');
-    }
-
-    break;
-
-            
-            case '.sendMessContact': 
-
-            await message.reply('404')
-
-            break;
 
             case '.sendAllContact':
 
@@ -171,14 +121,13 @@ client.on('message', async message => {
 
               const numberId = contact.id.user;
 
-              if (!numberId) continue; // se não tiver número, pula
+              if (!numberId) continue;
 
               try {
                   const chatClient = await client.getChatById(numberId + '@c.us');
                   await chatClient.sendMessage(messAllTest  );
                   console.log(`Mensagem enviada para: ${contact.pushname || numberId}`);
               } catch (err) {
-                  // Se der erro (tipo número inválido), apenas loga e continua
                   console.log(`Não consegui enviar para ${contact.pushname || numberId}: ${err}`);
               }
 
@@ -311,17 +260,15 @@ client.on('message', async message => {
 
             default:
                 //client.sendMessage(message.from,messageDefault)
-                console.log('underground')
+                //console.log('underground')
                 break;
         }
-        //switch<
 
     }
 })
 
 
 
-//ini
 client.initialize();
 
 
