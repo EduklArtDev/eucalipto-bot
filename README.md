@@ -5,7 +5,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Encerrado-green?style=for-the-badge)
 ![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)
-![Estrelas](https://img.shields.io/github/stars/EduKlArtDev/zefiro-readme?style=social)
+![Estrelas](https://img.shields.io/github/stars/EduKlArtDev/eucalipto-bot?style=social)
 
 **A README.md standardizer for use in github projects. It generates a completely standardized and useful .md for github. Take advantage of it. Thank you.** 🚀
 
